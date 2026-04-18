@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(cuid())
+  username     String        @unique
+  password     String
+  phone        String        @unique
+  email        String?       @unique
+  avatar       String?
+  role         String        @default("customer")
+  points       Int           @default(0)
+  memberLevel  String        @default("bronze")
+  isVerified   Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  orders       Order[]
+  pointRecords PointRecord[]
+  adminLogs    AdminLog[]
+
+  @@index([role])
+  @@index([phone])
+}
+
+model Dish {
+  id            String      @id @default(cuid())
+  name          String
+  category      String
+  subcategory   String?
+  price         Float
+  description   String?
+  imageUrl      String
+  tags          String      @default("[]")
+  calories      Int?
+  spicyLevel    Int         @default(0)
+  isRecommended Boolean     @default(false)
+  isAvailable   Boolean     @default(true)
+  stock         Int         @default(999)
+  salesCount    Int         @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  specs         DishSpec[]
+  comboItems    ComboItem[] @relation("ComboItems")
+  orderItems    OrderItem[]
+
+  @@index([category])
+  @@index([isAvailable])
+  @@index([isRecommended])
+  @@index([category, isAvailable])
+}
+
+model DishSpec {
+  id          String  @id @default(cuid())
+  dishId      String
+  dish        Dish    @relation(fields: [dishId], references: [id], onDelete: Cascade)
+  specType    String
+  specName    String
+  priceAdjust Float   @default(0)
+  isDefault   Boolean @default(false)
+  sortOrder   Int     @default(0)
+
+  @@index([dishId])
+}
+
+model ComboItem {
+  id          String  @id @default(cuid())
+  comboDishId String
+  comboDish   Dish    @relation("ComboItems", fields: [comboDishId], references: [id])
+  itemDishId  String
+  isRequired  Boolean @default(false)
+  sortOrder   Int     @default(0)
+
+  @@index([comboDishId])
+}
+
+model Order {
+  id             String        @id @default(cuid())
+  orderNo        String        @unique
+  pickupNo       String        @unique
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  orderType      String
+  tableNo        String?
+  originalPrice  Float
+  discountAmount Float         @default(0)
+  totalPrice     Float
+  pointsEarned   Int           @default(0)
+  couponId       String?
+  status         String        @default("pending")
+  orderTime      DateTime      @default(now())
+  estimatedTime  DateTime
+  completedTime  DateTime?
+  remark         String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  items          OrderItem[]
+  pointRecords   PointRecord[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([orderNo])
+  @@index([orderTime])
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  dishId      String
+  dish        Dish     @relation(fields: [dishId], references: [id])
+  dishName    String
+  dishImage   String
+  quantity    Int
+  unitPrice   Float
+  specSummary String?
+  subtotal    Float
+  createdAt   DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model Coupon {
+  id             String   @id @default(cuid())
+  code           String   @unique
+  name           String
+  type           String
+  value          Float
+  minOrderAmount Float    @default(0)
+  maxDiscount    Float?
+  totalCount     Int      @default(-1)
+  usedCount      Int      @default(0)
+  startAt        DateTime
+  expireAt       DateTime
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  @@index([code, isActive])
+  @@index([expireAt])
+}
+
+model PointRecord {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  orderId     String?
+  order       Order?   @relation(fields: [orderId], references: [id])
+  type        String
+  points      Int
+  description String
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model AdminLog {
+  id         String   @id @default(cuid())
+  adminId    String
+  admin      User     @relation(fields: [adminId], references: [id])
+  action     String
+  targetType String
+  targetId   String
+  detail     String?
+  createdAt  DateTime @default(now())
+
+  @@index([adminId])
+  @@index([createdAt])
+}
