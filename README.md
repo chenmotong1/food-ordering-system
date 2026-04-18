@@ -35,7 +35,7 @@ This is an online food ordering system that allows AI to complete tasks autonomo
 
 登录界面是一个右侧带有动画的界面，当然用户资料全都保存在本地的数据库中，
 在这里，我得感谢 https://github.com/a97242689/animated-characters-login-page  对  https://careercompassai.vercel.app/login  登录界面的功能特性的复现，
-让我对这个登入界面的设计比较顺利。
+让我对这个登录界面的还原比较顺利。
 <img width="1210" height="674" alt="image" src="https://github.com/user-attachments/assets/0a8067fd-7a6a-4f62-ab6a-6626063b8a83" />
 
 之后就是管理后台的展示
