@@ -50,6 +50,8 @@ This is an online food ordering system that allows AI to complete tasks autonomo
 不过在这里，他并不完善，它只制作了与其首页差不多的鼠标移动来造成“头盔面”的透视效果，我的选图也不是很好。
 并且，这个主页是及其吃GPU来渲染的，可能AI制作的也不一定靠谱。
 
+这个新首页的位置在另一个仓库，newHomePage中。
+
 
 这个主页面下滑后便是接入点餐系统的按钮页面，点击后就会回到刚开始那里。
 <img width="1129" height="656" alt="image" src="https://github.com/user-attachments/assets/b9f94a05-df31-4b10-9972-a40f953fb878" />
